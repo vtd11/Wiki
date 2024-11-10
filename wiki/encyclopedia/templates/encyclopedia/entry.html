@@ -8,4 +8,12 @@
 
     {{ content }}
 
+    <br>
+    
+    <form action="{% url 'edit' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="title" value="{{ TITLE }}">
+        <input type="submit" value="Edit page">
+    </form>
+
 {% endblock %}

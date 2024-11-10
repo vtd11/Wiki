@@ -1,5 +1,5 @@
-from django.http import HttpResponse
 from django.shortcuts import render
+import random
 
 from . import util
 
@@ -13,13 +13,12 @@ def entry(request, content):
     if util.get_entry(content) != None:
         return render(request, "encyclopedia/entry.html", {
             "content": util.get_entry(content),
-            "TITLE": content.capitalize()
+            "TITLE": content
         })
     else:
-        error= f"The {content} page was not found."
-        return render(request, "encyclopedia/entry.html", {
-            "content": error,
-            "TITLE": content.capitalize()
+        return render(request, "encyclopedia/error.html", {
+            "content": f"The {content} page was not found.",
+            "TITLE": "Not found"
         })
     
 def search(request):
@@ -28,7 +27,7 @@ def search(request):
         if util.get_entry(search) != None:
             return render(request, "encyclopedia/entry.html", {
                 "content": util.get_entry(search),
-                "TITLE": search.capitalize()
+                "TITLE": search
             })
         else:
             entries = util.list_entries()
@@ -41,8 +40,8 @@ def search(request):
             })
     else:
         return render(request, "encyclopedia/search.html", {
-                "content": util.list_entries()
-            })
+            "content": util.list_entries()
+        })
     
 def new_page(request):
     if request.method == "GET":
@@ -51,14 +50,50 @@ def new_page(request):
         title = request.POST['title']
         content = request.POST["content"]
         if util.get_entry(title) != None:
-            error= f"The {title} page already exists."
-            return render(request, "encyclopedia/entry.html", {
-                "content": error,
-                "TITLE": title.capitalize()
+            return render(request, "encyclopedia/error.html", {
+                "content": f"The {title} page already exists.",
+                "TITLE": "Conflicting Error"
             })
         else:
             util.save_entry(title, content)
             return render(request, "encyclopedia/entry.html", {
                 "content": content,
-                "TITLE": title.capitalize()
+                "TITLE": title
             })
+        
+def edit_page(request):
+    if request.method == "POST":
+        title = request.POST["title"]
+        content = util.get_entry(title)
+        return render(request, "encyclopedia/edit_page.html", {
+            "TITLE": title,
+            "content": content
+        })
+    else:
+        return render(request, "encyclopedia/error.html", {
+            "content": "You are not allowed to do that.",
+            "TITLE": "Authorization Error"
+        })
+    
+def save_page(request):
+    if request.method == "POST":
+        title = request.POST["title"]
+        new_content = request.POST["new_content"]
+        util.save_entry(title, new_content)
+        return render(request, "encyclopedia/entry.html", {
+            "content": new_content,
+            "TITLE": title
+        }) 
+    else:
+        return render(request, "encyclopedia/error.html", {
+            "content": "You are not allowed to do that.",
+            "TITLE": "Authorization Error"
+        })
+    
+def random_page(request):
+    entries = util.list_entries()
+    rand_entry = random.choice(entries)
+    return render(request, "encyclopedia/entry.html", {
+        "content": util.get_entry(rand_entry),
+        "TITLE": rand_entry
+    }) 
