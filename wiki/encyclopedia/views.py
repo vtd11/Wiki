@@ -21,3 +21,20 @@ def entry(request, content):
             "content": error,
             "TITLE": content.capitalize()
         })
+    
+def search(request):
+    search = request.POST['q']
+    if util.get_entry(search) != None:
+        return render(request, "encyclopedia/entry.html", {
+            "content": util.get_entry(search),
+            "TITLE": search.capitalize()
+        })
+    else:
+        entries = util.list_entries()
+        results = []
+        for entry in entries:
+            if search.lower() in entry.lower():
+                results.append(entry)
+        return render(request, "encyclopedia/search.html", {
+            "content": results
+        })
