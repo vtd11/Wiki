@@ -10,7 +10,7 @@
 
     <ul>
         {% for result in content %}
-            <li><a href="{% url 'entry' content=result %}">{{ result }} </a></li> 
+            <li><a href="{% url 'entry' title=result %}">{{ result | safe }} </a></li> 
         {% endfor %}
     </ul>
 
