@@ -13,11 +13,11 @@ def entry(request, content):
     if util.get_entry(content) != None:
         return render(request, "encyclopedia/entry.html", {
             "content": util.get_entry(content),
-            "TITLE": content
+            "TITLE": content.capitalize()
         })
     else:
         error= f"The {content} page was not found."
         return render(request, "encyclopedia/entry.html", {
             "content": error,
-            "TITLE": content
+            "TITLE": content.capitalize()
         })
